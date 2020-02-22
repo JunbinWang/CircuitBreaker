@@ -60,6 +60,8 @@ public class CircuitBreaker {
         String result = "Server is busy, please try later! ";
         switch (status){
             case OPEN_STATUS:
+                // TODO: 在继电器打开的情况下，在15秒内，我们直接让服务失败，不再去请求。
+                // 只有在过了15秒之后，我们才会再次切换到半开状态试试服务好了没
                 long time_passed = System.currentTimeMillis() - last_failure_time;
                 if(time_passed > RETRY_DURATION)
                     status = HALF_OPEN_STATUS;
