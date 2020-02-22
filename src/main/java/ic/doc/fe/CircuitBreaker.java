@@ -68,10 +68,12 @@ public class CircuitBreaker {
                 try {
                   result = fetchDataWithTimeOut();
                 } catch (TimeoutException e) {
+                    // TODO：在半开状态只尝试一次，如果失败就马上进入继电器打开模式
                     last_failure_time = System.currentTimeMillis();  // reset last_failure_time
                     status = OPEN_STATUS;
                     return result;
                 }
+                // TODO: 在半开状态下，连续成功几次之后，我们就可以把继电器关闭
                 retry_times++;
                 if(retry_times > ALLOW_RETRY_TIMES){
                     status = CLOSED_STATUS;
@@ -82,6 +84,7 @@ public class CircuitBreaker {
                 try {
                     result = fetchDataWithTimeOut();
                 } catch (TimeoutException e) {
+                    // TODO: 在关闭状态如果多次请求失败，就会进入继电器打开模式
                     failure_counter++;
                     if (failure_counter > ALLOW_FAILURE_TIMES) {
                         status = OPEN_STATUS; // change status to open
